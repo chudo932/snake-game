@@ -1,25 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="style/main.css">
-	<title>Snake</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style/main.css">
+  <title>Snake</title>
 </head>
 <body>
+  <div id="game">
+    <div class="game-header">
+      <div class="game-score">
+        <span class="score-count">Счёт: 0 | Рекорд: 0</span>
+      </div>
+    </div>
+    <div class="canvas-wrapper">
+      <canvas id="snake-canvas" width="320" height="400"></canvas>
+    </div>
+  </div>
 
-	<div id="game">
-		<div class="game-header">
-			<div class="game-score">
-				<span class="score-count">1234</span>
-			</div>
-		</div>
-		<div class="canvas-wrapper">
-			<canvas id="game-canvas" width="320" height="400"></canvas>
-		</div>
-	</div>
-
-	<script src="game/snakescripts.js"></script>
+  <audio id="backgroundMusic" preload="auto" loop>
+    <source src="audio/Rick_Astley_-_Never_Gonna_Give_You_Up_47958276.mp3" type="audio/mpeg">
+    Ваш браузер не поддерживает аудиоэлементы.
+  </audio>
+  <script src="game/snake.js"></script>
 </body>
 </html>
