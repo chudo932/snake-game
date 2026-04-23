@@ -26,6 +26,12 @@ let berry = {
   y: 0
 }
 
+let colorBerry = {
+  x: 0,
+  y: 0,
+  active: false
+};
+
 let canvas = document.querySelector("#game-canvas");
 let context = canvas.getContext("2d");
 scoreBlock = document.querySelector(".game-score .score-count");
@@ -64,6 +70,21 @@ function drawGrid() {
   }
   context.stroke();
 }
+// Отрисовка второй ягоды
+function drawColorBerry() {
+  if (!colorBerry.active) return;
+
+  context.beginPath();
+  context.fillStyle = "#00aaff";
+  context.arc(
+    colorBerry.x + (config.sizeCell / 2),
+    colorBerry.y + (config.sizeCell / 2),
+    config.sizeBerry,
+    0,
+    2 * Math.PI
+  );
+  context.fill();
+}
 
 function drawBerry() {
   context.beginPath();
@@ -90,26 +111,42 @@ function drawSnake() {
     snake.tails.pop();
   }
 
+  // Генерируем цветную ягоду с вероятностью 20 % каждый ход
+  if (!colorBerry.active) {
+    randomPositionColorBerry();
+  }
+
   snake.tails.forEach(function(el, index) {
-    if (index == 0) {
-      context.fillStyle = "#226d13";
-    } else {
-      context.fillStyle = "#3d9c42";
-    }
-    context.fillRect(el.x, el.y, config.sizeCell, config.sizeCell);
+  let scoredThisTurn = false; // Флаг: засчитано ли очко за этот ход
 
-    if (el.x === berry.x && el.y === berry.y) {
-      snake.maxTails++;
-      incScore();
-      randomPositionBerry();
-    }
+  // Проверяем столкновение с цветной ягодой
+  if (el.x === colorBerry.x && el.y === colorBerry.y && colorBerry.active && !scoredThisTurn) {
+    changeSnakeColor();
+    colorBerry.active = false;
+    scoredThisTurn = true;
+  }
 
-    for (let i = index + 1; i < snake.tails.length; i++) {
-      if (el.x == snake.tails[i].x && el.y == snake.tails[i].y) {
-        refreshGame();
-      }
+  if (index == 0) {
+    context.fillStyle = snake.headColor || "#226d13";
+  } else {
+    context.fillStyle = snake.bodyColor || "#3d9c42";
+  }
+  context.fillRect(el.x, el.y, config.sizeCell, config.sizeCell);
+
+  // Проверяем столкновение с обычной ягодой (только если ещё не засчитано очко)
+  if (el.x === berry.x && el.y === berry.y && !scoredThisTurn) {
+    snake.maxTails++;
+    incScore(); // +1 очко
+    randomPositionBerry();
+  }
+
+  for (let i = index + 1; i < snake.tails.length; i++) {
+    if (el.x == snake.tails[i].x && el.y == snake.tails[i].y) {
+      refreshGame();
     }
-  });
+  }
+});
+
 }
 
 function drawScore() {
@@ -135,6 +172,7 @@ function gameLoop() {
 
   drawGrid();
   drawBerry();
+  drawColorBerry();
   drawSnake();
 }
 
@@ -162,8 +200,11 @@ function refreshGame() {
   snake.maxTails = 3;
   snake.dx = config.sizeCell;
   snake.dy = 0;
+  snake.headColor = undefined; // Сброс цвета головы
+  snake.bodyColor = undefined; // Сброс цвета тела
 
   randomPositionBerry();
+  colorBerry.active = false;
 }
 
 // =====================================================
@@ -173,6 +214,43 @@ function refreshGame() {
 function randomPositionBerry() {
   berry.x = getRandomInt(0, canvas.width / config.sizeCell) * config.sizeCell;
   berry.y = getRandomInt(0, canvas.height / config.sizeCell) * config.sizeCell;
+}
+// Вызов второй ягоды
+function randomPositionColorBerry() {
+  if (Math.random() > 0.2) {
+    colorBerry.active = false;
+    return;
+  }
+
+  colorBerry.active = true;
+  colorBerry.x = getRandomInt(0, canvas.width / config.sizeCell) * config.sizeCell;
+  colorBerry.y = getRandomInt(0, canvas.height / config.sizeCell) * config.sizeCell;
+// проверка на появление на змее
+  for (let tail of snake.tails) {
+    if (colorBerry.x === tail.x && colorBerry.y === tail.y) {
+      randomPositionColorBerry();
+      return;
+    }
+  }
+}
+
+function changeSnakeColor() {
+  const colors = [
+    { head: "#ff6b6b", body: "#ee5253" }, // Красный
+    { head: "#00cec9", body: "#01a2a6" }, // Бирюзовый
+    { head: "#ffeaa7", body: "#fdcb6e" }, // Жёлтый
+    { head: "#a29bfe", body: "#6c5ce7" }, // Фиолетовый
+    { head: "#fd79a8", body: "#e84393" }  // Розовый
+  ];
+
+  const newColor = colors[Math.floor(Math.random() * colors.length)];
+  snake.headColor = newColor.head;
+  snake.bodyColor = newColor.body;
+
+  // +2 очка за синию ягоду
+  score += 2; 
+  saveHighScore(score);
+  drawScore();
 }
 
 function incScore() {
