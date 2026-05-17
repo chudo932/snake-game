@@ -264,7 +264,7 @@ function pauseBackgroundMusic() {
 }
 
 function initAudio() {
-  backgroundMusic.volume = 0.10;
+  backgroundMusic.volume = 0.05;
   document.addEventListener('click', function enableAudio() {
     playBackgroundMusic();
     document.removeEventListener('click', enableAudio);
