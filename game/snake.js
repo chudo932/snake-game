@@ -7,22 +7,24 @@ let scoreBlock;
 let score = 0;
 let stepCounter = 0; // Счётчик кадров для ограничения скорости
 
-const config = {
+// Создание переменной для дальнейшего задавания правил и размеров игрового поля
+const config = { 
   step: 0,
-  maxStep: 12,
-  sizeCell: 16,
-  sizeBerry: 16 / 4
+  maxStep: 12, 
+  sizeCell: 16, 
+  sizeBerry: 16 / 4 
 };
 
-const snake = {
+// Создание переменной для дальнейшего описания состояния и внешнего вида змеи
+const snake = { 
   x: 160,
-  y: 160,
+  y: 160, 
   dx: config.sizeCell,
   dy: 0,
-  tails: [],
-  maxTails: 3,
-  headColor: "#226d13",
-  bodyColor: "#3d9c42"
+  tails: [], 
+  maxTails: 3, 
+  headColor: "#226d13", 
+  bodyColor: "#3d9c42" 
 };
 
 let berry = { x: 0, y: 0 };
